@@ -22,20 +22,21 @@ public class Transceiver: SessionDelegate {
     public init(displayName: String!) {
         session = Session(displayName: displayName, delegate: nil)
         advertiser = Advertiser(mcSession: session.mcSession)
-        browser = Browser(mcSession: session.mcSession)
+
+        browser = Browser(session: session, serviceName: "dummy-service")
         session.delegate = self
     }
 
     func startTransceiving(serviceType: String, discoveryInfo: [String: String]? = nil) {
         advertiser.startAdvertising(serviceType: serviceType, discoveryInfo: discoveryInfo)
-        browser.startBrowsing(serviceType: serviceType)
+        browser.start()
         transceiverMode = .Both
     }
 
     func stopTransceiving() {
         session.delegate = nil
         advertiser.stopAdvertising()
-        browser.stopBrowsing()
+        browser.stop()
         session.disconnect()
     }
 
@@ -45,7 +46,7 @@ public class Transceiver: SessionDelegate {
     }
 
     func startBrowsing(serviceType: String) {
-        browser.startBrowsing(serviceType: serviceType)
+        browser.start()
         transceiverMode = .Browse
     }
 
