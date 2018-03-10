@@ -20,7 +20,8 @@ final class Browser: NSObject {
         //  * Must contain at least one ASCII letter
         //  * Must not begin or end with a hyphen
         //  * Must not contain hyphens adjacent to other hyphens.
-
+        //
+        // If these restrictions are not met, MCNearbyServiceBrowser will throw an exception.
         assert(
             serviceName.count > 1 && serviceName.count < 15,
             "Service Name must be 1 to 15 characters long"
