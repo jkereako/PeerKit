@@ -14,7 +14,6 @@ enum TransceiverMode {
 }
 
 public class Transceiver: SessionDelegate {
-
     var transceiverMode = TransceiverMode.Both
     let session: Session
     let advertiser: Advertiser

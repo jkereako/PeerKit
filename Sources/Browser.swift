@@ -11,8 +11,7 @@ import MultipeerConnectivity
 
 let timeStarted = NSDate()
 
-class Browser: NSObject, MCNearbyServiceBrowserDelegate {
-
+final class Browser: NSObject {
     let mcSession: MCSession
 
     init(mcSession: MCSession) {
@@ -32,8 +31,12 @@ class Browser: NSObject, MCNearbyServiceBrowserDelegate {
         mcBrowser?.delegate = nil
         mcBrowser?.stopBrowsingForPeers()
     }
+}
 
-    func browser(_ browser: MCNearbyServiceBrowser, foundPeer peerID: MCPeerID, withDiscoveryInfo info: [String : String]?) {
+// MARK: - MCNearbyServiceBrowserDelegate
+extension Browser: MCNearbyServiceBrowserDelegate {
+    func browser(_ browser: MCNearbyServiceBrowser, foundPeer peerID: MCPeerID,
+                 withDiscoveryInfo info: [String : String]?) {
         browser.invitePeer(peerID, to: mcSession, withContext: nil, timeout: 30)
     }
 
