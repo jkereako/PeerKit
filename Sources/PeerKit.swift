@@ -35,7 +35,7 @@ public let myName = UIDevice.current.name
 public let myName = Host.current().localizedName ?? ""
 #endif
 
-public var transceiver = Transceiver(displayName: myName)
+public var transceiver = Transceiver(displayName: myName, serviceName: "dummy-service")
 public var session: MCSession?
 
 // MARK: Event Handling
@@ -93,19 +93,20 @@ func didFinishReceivingResource(myPeerID: MCPeerID, resourceName: String, fromPe
 // MARK: Advertise/Browse
 
 public func transceive(serviceType: String, discoveryInfo: [String: String]? = nil) {
-    transceiver.startTransceiving(serviceType: serviceType, discoveryInfo: discoveryInfo)
+    transceiver.advertise()
+    transceiver.browse()
 }
 
 public func advertise(serviceType: String, discoveryInfo: [String: String]? = nil) {
-    transceiver.startAdvertising(serviceType: serviceType, discoveryInfo: discoveryInfo)
+    transceiver.advertise()
 }
 
 public func browse(serviceType: String) {
-    transceiver.startBrowsing(serviceType: serviceType)
+    transceiver.browse()
 }
 
 public func stopTransceiving() {
-    transceiver.stopTransceiving()
+    transceiver.stop()
     session = nil
 }
 

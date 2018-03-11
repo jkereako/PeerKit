@@ -1,72 +1,54 @@
 //
 //  Transceiver.swift
-//  CardsAgainst
+//  PeerKit
 //
 //  Created by JP Simard on 11/3/14.
 //  Copyright (c) 2014 JP Simard. All rights reserved.
 //
 
-import Foundation
 import MultipeerConnectivity
 
-enum TransceiverMode {
-    case Browse, Advertise, Both
-}
-
-public class Transceiver: SessionDelegate {
-    var transceiverMode = TransceiverMode.Both
+final public class Transceiver {
     let session: Session
     let advertiser: Advertiser
     let browser: Browser
 
-    public init(displayName: String!) {
-        session = Session(displayName: displayName, delegate: nil)
-        advertiser = Advertiser(mcSession: session.mcSession)
+    public init(displayName: String, serviceName: String) {
+        session = Session(displayName: displayName, serviceName: serviceName)
+        advertiser = Advertiser(session: session)
+        browser = Browser(session: session)
 
-        browser = Browser(session: session, serviceName: "dummy-service")
         session.delegate = self
     }
 
-    func startTransceiving(serviceType: String, discoveryInfo: [String: String]? = nil) {
-        advertiser.startAdvertising(serviceType: serviceType, discoveryInfo: discoveryInfo)
-        browser.start()
-        transceiverMode = .Both
+    func advertise() {
+        advertiser.start()
     }
 
-    func stopTransceiving() {
+    func browse() {
+        browser.start()
+    }
+
+    func stop() {
         session.delegate = nil
-        advertiser.stopAdvertising()
+        advertiser.stop()
         browser.stop()
         session.disconnect()
     }
+}
 
-    func startAdvertising(serviceType: String, discoveryInfo: [String: String]? = nil) {
-        advertiser.startAdvertising(serviceType: serviceType, discoveryInfo: discoveryInfo)
-        transceiverMode = .Advertise
+// MARK: - SessionDelegate
+extension Transceiver: SessionDelegate {
+    public func isConnecting(toPeer peer: MCPeerID) {
+        // unused
     }
-
-    func startBrowsing(serviceType: String) {
-        browser.start()
-        transceiverMode = .Browse
+    public func didConnect(toPeer peer: MCPeerID) {
+        // unused
     }
-
-    public func connecting(myPeerID: MCPeerID, toPeer peer: MCPeerID) {
-        didConnecting(myPeerID: myPeerID, peer: peer)
+    public func didDisconnect(fromPeer peer: MCPeerID) {
+        // unused
     }
-
-    public func connected(myPeerID: MCPeerID, toPeer peer: MCPeerID) {
-        didConnect(myPeerID: myPeerID, peer: peer)
-    }
-
-    public func disconnected(myPeerID: MCPeerID, fromPeer peer: MCPeerID) {
-        didDisconnect(myPeerID: myPeerID, peer: peer)
-    }
-
-    public func receivedData(myPeerID: MCPeerID, data: Data, fromPeer peer: MCPeerID) {
-        didReceiveData(data, fromPeer: peer)
-    }
-
-    public func finishReceivingResource(myPeerID: MCPeerID, resourceName: String, fromPeer peer: MCPeerID, atURL localURL: URL?) {
-        didFinishReceivingResource(myPeerID: myPeerID, resourceName: resourceName, fromPeer: peer, atURL: localURL)
+    public func didReceiveData(data: Data, fromPeer peer: MCPeerID) {
+        // unused
     }
 }

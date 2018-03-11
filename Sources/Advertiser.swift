@@ -9,33 +9,43 @@
 import Foundation
 import MultipeerConnectivity
 
-class Advertiser: NSObject, MCNearbyServiceAdvertiserDelegate {
+final class Advertiser: NSObject {
+    private let session: Session
+    private let advertiser: MCNearbyServiceAdvertiser
 
-    let mcSession: MCSession
+    init(session: Session) {
+        self.session = session
+        advertiser = MCNearbyServiceAdvertiser(
+            peer: session.mcSession.myPeerID, discoveryInfo: nil, serviceType: session.serviceName
+        )
 
-    init(mcSession: MCSession) {
-        self.mcSession = mcSession
         super.init()
     }
 
-    private var advertiser: MCNearbyServiceAdvertiser?
 
-    func startAdvertising(serviceType: String, discoveryInfo: [String: String]? = nil) {
-        advertiser = MCNearbyServiceAdvertiser(peer: mcSession.myPeerID, discoveryInfo: discoveryInfo, serviceType: serviceType)
-        advertiser?.delegate = self
-        advertiser?.startAdvertisingPeer()
+    func start() {
+        advertiser.delegate = self
+        advertiser.startAdvertisingPeer()
     }
 
-    func stopAdvertising() {
-        advertiser?.delegate = nil
-        advertiser?.stopAdvertisingPeer()
+    func stop() {
+        advertiser.delegate = nil
+        advertiser.stopAdvertisingPeer()
     }
+}
 
-    func advertiser(_ advertiser: MCNearbyServiceAdvertiser, didReceiveInvitationFromPeer peerID: MCPeerID, withContext context: Data?, invitationHandler: @escaping (Bool, MCSession?) -> Void) {
-        let accept = mcSession.myPeerID.hashValue > peerID.hashValue
-        invitationHandler(accept, mcSession)
+// MARK: - MCNearbyServiceAdvertiserDelegate
+extension Advertiser: MCNearbyServiceAdvertiserDelegate {
+    func advertiser(_ advertiser: MCNearbyServiceAdvertiser,
+                    didReceiveInvitationFromPeer peerID: MCPeerID, withContext context: Data?,
+                    invitationHandler: @escaping (Bool, MCSession?) -> Void) {
+
+        let accept = session.myPeerID.hashValue > peerID.hashValue
+
+        invitationHandler(accept, session.mcSession)
+
         if accept {
-            stopAdvertising()
+            stop()
         }
     }
 }

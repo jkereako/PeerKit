@@ -13,38 +13,10 @@ final class Browser: NSObject {
     private let nearbyServiceBrowser: MCNearbyServiceBrowser
     private let peerInvitationTimeout: Double = 30
 
-    init(session: Session, serviceName: String) {
-        // The service name must meet the restrictions of RFC 6335:
-        //  * Must be 1–15 characters long
-        //  * Can contain only ASCII lowercase letters, numbers, and hyphens
-        //  * Must contain at least one ASCII letter
-        //  * Must not begin or end with a hyphen
-        //  * Must not contain hyphens adjacent to other hyphens.
-        //
-        // If these restrictions are not met, MCNearbyServiceBrowser will throw an exception.
-        assert(
-            serviceName.count > 1 && serviceName.count < 15,
-            "Service Name must be 1 to 15 characters long"
-        )
-        assert(
-            serviceName[serviceName.startIndex] != "-" && serviceName[serviceName.endIndex] != "-",
-            "Service Name must not begin or end with a hyphen"
-        )
-        assert(
-            serviceName.range(of: "--") == nil,
-            "Service Name must not contain adjacent hyphens"
-        )
-
-        let legalCharacters = CharacterSet(charactersIn: "abcdefghijklmnopqrstuvwxyz0123456789-")
-
-        assert(
-            serviceName.rangeOfCharacter(from: legalCharacters.inverted) == nil,
-            "Service Name must contain only lowercase letters, decimal digits and hyphens."
-        )
-
+    init(session: Session) {
         self.mcSession = session.mcSession
         nearbyServiceBrowser = MCNearbyServiceBrowser(
-            peer: session.myPeerID, serviceType: serviceName
+            peer: session.myPeerID, serviceType: session.serviceName
         )
 
         super.init()
@@ -66,7 +38,6 @@ final class Browser: NSObject {
 extension Browser: MCNearbyServiceBrowserDelegate {
     func browser(_ browser: MCNearbyServiceBrowser, foundPeer peerID: MCPeerID,
                  withDiscoveryInfo info: [String : String]?) {
-
         browser.invitePeer(peerID, to: mcSession, withContext: nil, timeout: peerInvitationTimeout)
     }
 
