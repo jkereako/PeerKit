@@ -18,13 +18,11 @@
 		E89FD6E31A0C3D1000C2FEF7 /* Advertiser.swift in Sources */ = {isa = PBXBuildFile; fileRef = E89FD6DF1A0C3D1000C2FEF7 /* Advertiser.swift */; };
 		E89FD6E41A0C3D1000C2FEF7 /* Browser.swift in Sources */ = {isa = PBXBuildFile; fileRef = E89FD6E01A0C3D1000C2FEF7 /* Browser.swift */; };
 		E89FD6E51A0C3D1000C2FEF7 /* Session.swift in Sources */ = {isa = PBXBuildFile; fileRef = E89FD6E11A0C3D1000C2FEF7 /* Session.swift */; };
-		E89FD6E61A0C3D1000C2FEF7 /* Transceiver.swift in Sources */ = {isa = PBXBuildFile; fileRef = E89FD6E21A0C3D1000C2FEF7 /* Transceiver.swift */; };
 		E8DC829C1AB730CD000BB585 /* PeerKit.h in Headers */ = {isa = PBXBuildFile; fileRef = E89FD6C51A0C3CDC00C2FEF7 /* PeerKit.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		E8DC829D1AB730D3000BB585 /* PeerKit.swift in Sources */ = {isa = PBXBuildFile; fileRef = E89FD6DD1A0C3CF800C2FEF7 /* PeerKit.swift */; };
 		E8DC829E1AB730D3000BB585 /* Advertiser.swift in Sources */ = {isa = PBXBuildFile; fileRef = E89FD6DF1A0C3D1000C2FEF7 /* Advertiser.swift */; };
 		E8DC829F1AB730D3000BB585 /* Browser.swift in Sources */ = {isa = PBXBuildFile; fileRef = E89FD6E01A0C3D1000C2FEF7 /* Browser.swift */; };
 		E8DC82A01AB730D3000BB585 /* Session.swift in Sources */ = {isa = PBXBuildFile; fileRef = E89FD6E11A0C3D1000C2FEF7 /* Session.swift */; };
-		E8DC82A11AB730D3000BB585 /* Transceiver.swift in Sources */ = {isa = PBXBuildFile; fileRef = E89FD6E21A0C3D1000C2FEF7 /* Transceiver.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -57,7 +55,6 @@
 		E89FD6DF1A0C3D1000C2FEF7 /* Advertiser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Advertiser.swift; sourceTree = "<group>"; };
 		E89FD6E01A0C3D1000C2FEF7 /* Browser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Browser.swift; sourceTree = "<group>"; };
 		E89FD6E11A0C3D1000C2FEF7 /* Session.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Session.swift; sourceTree = "<group>"; };
-		E89FD6E21A0C3D1000C2FEF7 /* Transceiver.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Transceiver.swift; sourceTree = "<group>"; };
 		E8DC82821AB7306C000BB585 /* PeerKit.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = PeerKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -149,7 +146,6 @@
 				E89FD6DF1A0C3D1000C2FEF7 /* Advertiser.swift */,
 				E89FD6E01A0C3D1000C2FEF7 /* Browser.swift */,
 				E89FD6E11A0C3D1000C2FEF7 /* Session.swift */,
-				E89FD6E21A0C3D1000C2FEF7 /* Transceiver.swift */,
 				62F6AADE20538695008D7927 /* SessionDelegate.swift */,
 			);
 			path = Sources;
@@ -363,7 +359,6 @@
 				E89FD6E31A0C3D1000C2FEF7 /* Advertiser.swift in Sources */,
 				E89FD6DE1A0C3CF800C2FEF7 /* PeerKit.swift in Sources */,
 				62F6AADF20538695008D7927 /* SessionDelegate.swift in Sources */,
-				E89FD6E61A0C3D1000C2FEF7 /* Transceiver.swift in Sources */,
 				E89FD6E41A0C3D1000C2FEF7 /* Browser.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -376,7 +371,6 @@
 				E8DC829E1AB730D3000BB585 /* Advertiser.swift in Sources */,
 				E8DC829D1AB730D3000BB585 /* PeerKit.swift in Sources */,
 				62F6AAE020538930008D7927 /* SessionDelegate.swift in Sources */,
-				E8DC82A11AB730D3000BB585 /* Transceiver.swift in Sources */,
 				E8DC829F1AB730D3000BB585 /* Browser.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

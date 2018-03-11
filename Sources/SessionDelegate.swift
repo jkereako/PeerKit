@@ -8,7 +8,7 @@
 
 import MultipeerConnectivity
 
-public protocol SessionDelegate {
+public protocol SessionDelegate: class {
     func isConnecting(toPeer peer: MCPeerID)
     func didConnect(toPeer peer: MCPeerID)
     func didDisconnect(fromPeer peer: MCPeerID)

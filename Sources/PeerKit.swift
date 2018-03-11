@@ -1,145 +1,77 @@
 //
 //  PeerKit.swift
-//  CardsAgainst
+//  PeerKit
 //
 //  Created by JP Simard on 11/5/14.
 //  Copyright (c) 2014 JP Simard. All rights reserved.
 //
 
-import Foundation
 import MultipeerConnectivity
 
-// MARK: Type Aliases
-
-public typealias PeerBlock = ((_ myPeerID: MCPeerID, _ peerID: MCPeerID) -> Void)
-public typealias EventBlock = ((_ peerID: MCPeerID, _ event: String, _ object: AnyObject?) -> Void)
-public typealias ObjectBlock = ((_ peerID: MCPeerID, _ object: AnyObject?) -> Void)
-public typealias ResourceBlock = ((_ myPeerID: MCPeerID, _ resourceName: String, _ peer: MCPeerID, _ localURL: URL?) -> Void)
-
-// MARK: Event Blocks
-
-public var onConnecting: PeerBlock?
-public var onConnect: PeerBlock?
-public var onDisconnect: PeerBlock?
-public var onEvent: EventBlock?
-public var onEventObject: ObjectBlock?
-public var onFinishReceivingResource: ResourceBlock?
-public var eventBlocks = [String: ObjectBlock]()
-
-// MARK: PeerKit Globals
-
 #if os(iOS)
-import UIKit
-public let myName = UIDevice.current.name
-#else
-public let myName = Host.current().localizedName ?? ""
+    import UIKit
 #endif
 
-public var transceiver = Transceiver(displayName: myName, serviceName: "dummy-service")
-public var session: MCSession?
+final public class PeerKit {
+    weak var delegate: SessionDelegate?
 
-// MARK: Event Handling
+    let displayName: String
+    let session: Session
+    let advertiser: Advertiser
+    let browser: Browser
 
-func didConnecting(myPeerID: MCPeerID, peer: MCPeerID) {
-    if let onConnecting = onConnecting {
-        DispatchQueue.main.async {
-            onConnecting(myPeerID, peer)
-        }
-    }
-}
+    init(serviceName: String) {
+        // The service name must meet the restrictions of RFC 6335:
+        //  * Must be 1–15 characters long
+        //  * Can contain only ASCII lowercase letters, numbers, and hyphens
+        //  * Must contain at least one ASCII letter
+        //  * Must not begin or end with a hyphen
+        //  * Must not contain hyphens adjacent to other hyphens.
+        assert(
+            serviceName.count > 1 && serviceName.count < 15,
+            "Service Name must be 1 to 15 characters long"
+        )
+        assert(
+            serviceName[serviceName.startIndex] != "-" && serviceName[serviceName.endIndex] != "-",
+            "Service Name must not begin or end with a hyphen"
+        )
+        assert(
+            serviceName.range(of: "--") == nil,
+            "Service Name must not contain adjacent hyphens"
+        )
 
-func didConnect(myPeerID: MCPeerID, peer: MCPeerID) {
-    if session == nil {
-        session = transceiver.session.mcSession
-    }
-    if let onConnect = onConnect {
-        DispatchQueue.main.async {
-            onConnect(myPeerID, peer)
-        }
-    }
-}
+        let legalCharacters = CharacterSet(charactersIn: "abcdefghijklmnopqrstuvwxyz0123456789-")
 
-func didDisconnect(myPeerID: MCPeerID, peer: MCPeerID) {
-    if let onDisconnect = onDisconnect {
-        DispatchQueue.main.async {
-            onDisconnect(myPeerID, peer)
-        }
-    }
-}
+        assert(
+            serviceName.rangeOfCharacter(from: legalCharacters.inverted) == nil,
+            "Service Name must contain only lowercase letters, decimal digits and hyphens."
+        )
 
-func didReceiveData(_ data: Data, fromPeer peer: MCPeerID) {
-    if let dict = NSKeyedUnarchiver.unarchiveObject(with: data) as? [String: AnyObject],
-        let event = dict["event"] as? String,
-        let object = dict["object"] {
-            DispatchQueue.main.async {
-                if let onEvent = onEvent {
-                    onEvent(peer, event, object)
-                }
-                if let eventBlock = eventBlocks[event] {
-                    eventBlock(peer, object)
-                }
-            }
-    }
-}
+        #if os(iOS)
+            displayName = UIDevice.current.name
+        #else
+            displayName = Host.current().localizedName ?? ""
+        #endif
 
-func didFinishReceivingResource(myPeerID: MCPeerID, resourceName: String, fromPeer peer: MCPeerID, atURL localURL: URL?) {
-    if let onFinishReceivingResource = onFinishReceivingResource {
-        DispatchQueue.main.async {
-            onFinishReceivingResource(myPeerID, resourceName, peer, localURL)
-        }
-    }
-}
+        session = Session(displayName: displayName, serviceName: serviceName)
+        advertiser = Advertiser(session: session)
+        browser = Browser(session: session)
 
-// MARK: Advertise/Browse
-
-public func transceive(serviceType: String, discoveryInfo: [String: String]? = nil) {
-    transceiver.advertise()
-    transceiver.browse()
-}
-
-public func advertise(serviceType: String, discoveryInfo: [String: String]? = nil) {
-    transceiver.advertise()
-}
-
-public func browse(serviceType: String) {
-    transceiver.browse()
-}
-
-public func stopTransceiving() {
-    transceiver.stop()
-    session = nil
-}
-
-// MARK: Events
-
-public func sendEvent(_ event: String, object: AnyObject? = nil, toPeers peers: [MCPeerID]? = session?.connectedPeers) {
-    guard let peers = peers, !peers.isEmpty else {
-        return
+        session.delegate = delegate
     }
 
-    var rootObject: [String: AnyObject] = ["event": event as AnyObject]
-
-    if let object: AnyObject = object {
-        rootObject["object"] = object
+    func advertise() {
+        advertiser.start()
     }
 
-    let data = NSKeyedArchiver.archivedData(withRootObject: rootObject)
-
-    do {
-        try session?.send(data, toPeers: peers, with: .reliable)
-    } catch _ {
+    func browse() {
+        browser.start()
     }
-}
 
-public func sendResourceAtURL(_ resourceURL: URL,
-                   withName resourceName: String,
-  toPeers peers: [MCPeerID]? = session?.connectedPeers,
-  withCompletionHandler completionHandler: ((Error?) -> Void)?) -> [Progress?]? {
-
-    if let session = session {
-        return peers?.map { peerID in
-            return session.sendResource(at: resourceURL, withName: resourceName, toPeer: peerID, withCompletionHandler: completionHandler)
-        }
+    func stop() {
+        session.delegate = nil
+        advertiser.stop()
+        browser.stop()
+        session.disconnect()
     }
-    return nil
 }
