@@ -9,7 +9,7 @@
 import MultipeerConnectivity
 
 final class Session: NSObject {
-    var delegate: SessionDelegate?
+    weak var delegate: SessionDelegate?
     let myPeerID: MCPeerID
     let mcSession: MCSession
     let serviceName: String
